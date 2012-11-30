@@ -1,2 +1,5 @@
 *.swp
 *.pyc
+release
+release.sh
+dist

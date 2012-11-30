@@ -44,10 +44,10 @@ class BaseData(object):
         r = self._request('get', query)
         return r
 
-    def set(self, query, key, value):
+    def set(self, query, update):
         if not self._loggedin:
             raise Exception, 'you have to login to write to base data'
-        return self._request('set', {'query': query, 'key': key, 'value': value})
+        return self._request('set', {'query': query, 'update': update})
 
     def log(self, query):
         return self._request('log', query)
