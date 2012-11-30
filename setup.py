@@ -7,10 +7,13 @@ except:
     from distutils.core import setup
 
 def get_version():
+    import os
     import subprocess
-    p = subprocess.Popen(['git', 'describe', '--tags'], stdout=subprocess.PIPE)
-    r = p.communicate()
-    return r[0].strip()
+    if os.path.exists('.git'):
+        p = subprocess.Popen(['git', 'describe', '--tags'], stdout=subprocess.PIPE)
+        r = p.communicate()
+        return r[0].strip()
+    return 0.0
 
 setup(
     name="basedata",
