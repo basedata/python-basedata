@@ -21,9 +21,7 @@ class BaseData(object):
     DEBUG = False
     debuglevel = 0
 
-    def __init__(self, url=None):
-        if not url:
-            url = 'https://basedata.org/'
+    def __init__(self, url='https://basedata.org/'):
         if not url.endswith('/'):
             url = url + '/'
         self._url = url
@@ -44,10 +42,10 @@ class BaseData(object):
         r = self._request('get', query)
         return r
 
-    def set(self, query, update):
+    def set(self, query, update, description=''):
         if not self._loggedin:
             raise Exception, 'you have to login to write to base data'
-        return self._request('set', {'query': query, 'update': update})
+        return self._request('set', {'query': query, 'update': update, 'description': description})
 
     def log(self, query):
         return self._request('log', query)
@@ -63,16 +61,20 @@ class BaseData(object):
         request.add_header('Content-Length', str(len(body)))
         request.add_header('Accept-Encoding', 'gzip, deflate')
         request.add_data(body)
+        f = None
         try:
             f = self._opener.open(request)
         except urllib2.HTTPError, e:
             if self.DEBUG:
                 with open('/tmp/basedata_error.html', 'w') as f:
                     f.write(e.read())
+            if f:
+                f.close()
             raise e
         result = f.read()
         if f.headers.get('content-encoding', None) == 'gzip':
             result = gzip.GzipFile(fileobj=StringIO.StringIO(result)).read()
+        f.close()
         result = result.decode('utf-8')
         result = json.loads(result)
         if 'error' in result:
